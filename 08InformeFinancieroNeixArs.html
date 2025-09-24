@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Informe Ejecutivo Financiero - Neix SA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .card {
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .metric-card {
+            border-left: 4px solid #4f46e5;
+        }
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #111827;
+            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #374151;
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            text-align: left;
+            padding: 0.75rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        th {
+            background-color: #f9fafb;
+            font-weight: 600;
+            color: #374151;
+        }
+        tbody tr:nth-child(even) {
+            background-color: #f9fafb;
+        }
+        .number {
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+        }
+        .text-loss {
+            color: #dc2626;
+        }
+        .gemini-btn {
+            background-color: #4f46e5;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            transition: background-color 0.3s;
+            cursor: pointer;
+            border: none;
+        }
+        .gemini-btn:hover {
+            background-color: #4338ca;
+        }
+        .gemini-btn:disabled {
+            background-color: #a5b4fc;
+            cursor: not-allowed;
+        }
+        .disclaimer {
+            font-size: 0.75rem;
+            color: #6b7280;
+            margin-top: 0.75rem;
+            text-align: center;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 p-4 sm:p-6 lg:p-8">
+    <div class="max-w-7xl mx-auto">
+
+        <!-- Header -->
+        <div class="card text-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-900">Informe Ejecutivo para la Dirección</h1>
+            <p class="text-xl text-indigo-600 font-semibold">Neix S.A. - Agente de Liquidación y Compensación</p>
+            <p class="text-md text-gray-500 mt-2">Período Analizado: 01/01/2025 al 31/08/2025</p>
+        </div>
+
+        <!-- Resumen Ejecutivo -->
+        <div class="card">
+            <div class="flex justify-between items-center">
+                <h2>Resumen Ejecutivo</h2>
+            </div>
+            <div id="summary-content">
+                <p class="mb-4">
+                    Análisis del desempeño financiero de Neix S.A. durante los primeros ocho meses de 2025. El resultado acumulado a agosto es de <strong>$4.329 millones</strong>, un resultado robusto a pesar de la <strong>marcada volatilidad en los resultados mensuales</strong>. Se registraron dos meses con pérdidas operativas (mayo y agosto), lo que subraya la exposición de la compañía a las fluctuaciones del mercado.
+                </p>
+                 <p class="mt-4">
+                    La situación patrimonial general sigue siendo sólida, con un crecimiento del activo del 60% en el período y un Patrimonio Neto que aumentó un 24%. Sin embargo, la recurrencia de meses con pérdidas operativas es una señal de alerta que requiere atención estratégica, especialmente en la gestión de riesgos de la cartera propia y el control de egresos en meses de bajos ingresos.
+                </p>
+            </div>
+             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                <div class="p-4 bg-green-50 rounded-lg metric-card border-green-500">
+                    <h4 class="font-bold text-lg text-green-800">Resultado Acumulado a Agosto</h4>
+                    <p class="text-2xl font-semibold text-green-900" id="kpi-resultado-acumulado"></p>
+                    <p class="text-sm text-gray-600">Cifra final del período.</p>
+                </div>
+                <div class="p-4 bg-blue-50 rounded-lg metric-card border-blue-500">
+                    <h4 class="font-bold text-lg text-blue-800">Activo Total a Agosto</h4>
+                    <p class="text-2xl font-semibold text-blue-900" id="kpi-activo-total"></p>
+                    <p class="text-sm text-gray-600">Aumento del 60% desde Enero.</p>
+                </div>
+                <div class="p-4 bg-purple-50 rounded-lg metric-card border-purple-500">
+                    <h4 class="font-bold text-lg text-purple-800">Solvencia Promedio</h4>
+                    <p class="text-2xl font-semibold text-purple-900" id="kpi-solvencia"></p>
+                    <p class="text-sm text-gray-600">Sólida capacidad para cubrir pasivos.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 1. Evolución de Ingresos vs. Egresos -->
+        <div class="card">
+            <h2>a) Evolución de Resultados Mensuales (Ingresos vs. Egresos)</h2>
+            <p class="mb-4">
+                El análisis mensual muestra una dinámica de resultados muy variable. Se destacan los picos de rentabilidad en <strong>abril y junio</strong>, contrastando con las pérdidas operativas de <strong>mayo y agosto</strong>. Esta volatilidad sugiere una alta exposición a las fluctuaciones del mercado.
+            </p>
+            <div class="w-full h-96 mb-6">
+                <canvas id="resultadosChart"></canvas>
+            </div>
+            
+            <h3>Detalle Mensual y Ratios Clave</h3>
+            <div class="overflow-x-auto">
+                <table id="tabla-resultados">
+                    <!-- La tabla se generará con JS -->
+                </table>
+            </div>
+            <p class="text-sm mt-4 text-gray-600">
+                <strong>Margen Neto del Período:</strong> El margen total del período se ubicó en un saludable <strong>25,00%</strong>, impulsado por los meses de alta rentabilidad que lograron compensar los períodos de pérdida.
+            </p>
+        </div>
+
+        <!-- 2. Evolución del Resultado por Tenencia -->
+        <div class="card">
+            <h2>b) Evolución Mensual del Resultado de la Cartera Propia</h2>
+            <p class="mb-4">
+                La cartera propia, principal motor de resultados, también refleja la alta volatilidad. Tras un excelente desempeño en abril, se observa un rendimiento positivo pero considerablemente más moderado en mayo. El resto de los meses también se mantuvo en terreno positivo, aunque con fluctuaciones.
+            </p>
+            <div class="w-full h-96 mb-6">
+                <canvas id="carteraChart"></canvas>
+            </div>
+        </div>
+
+        <!-- 3. Evolución Patrimonial -->
+        <div class="card">
+            <h2>c) Evolución del Activo, Pasivo y Patrimonio Neto</h2>
+            <p class="mb-4">
+                La estructura patrimonial se ha mantenido robusta. A pesar de la volatilidad, el Patrimonio Neto ha crecido un 24% desde enero. El crecimiento del activo se financió de manera equilibrada, manteniendo los indicadores de solvencia y apalancamiento en niveles saludables a lo largo del período.
+            </p>
+            <div class="w-full h-96 mb-6">
+                <canvas id="patrimonioChart"></canvas>
+            </div>
+            
+            <h3>Detalle Mensual y Ratios Financieros</h3>
+            <div class="overflow-x-auto">
+                <table id="tabla-patrimonio">
+                     <!-- La tabla se generará con JS -->
+                </table>
+            </div>
+        </div>
+
+        <!-- 4. Incidencia de Gastos por Centro de Costos -->
+        <div class="card">
+            <h2>d) Incidencia de Gastos por Centro de Costos (Acumulado Ene-Ago)</h2>
+            <p class="mb-4">
+                La estructura de costos acumulada muestra una alta concentración en el área de "Productores", que representa el **57,32%** del gasto total por centro de costos. Esto sugiere que los costos variables ligados a la producción comercial son el principal componente de los egresos. "Mesa" y "Neix (Corporativo)" le siguen en importancia.
+            </p>
+            <div class="flex flex-col md:flex-row items-center gap-6">
+                <div class="w-full md:w-1/2 h-80">
+                    <canvas id="gastosChart"></canvas>
+                </div>
+                <div class="w-full md:w-1/2">
+                    <h3>Principales Centros de Costos (Acumulado Ene-Ago)</h3>
+                    <ul class="space-y-2" id="lista-gastos-cc">
+                        <!-- Generado por JS -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 5. Desglose de Gastos Fijos -->
+        <div class="card">
+            <h2>e) Desglose de Gastos Fijos (Acumulado Ene-Ago)</h2>
+            <p class="mb-4">
+                El análisis de los gastos fijos acumulados revela que la mayor parte se concentra en "Sueldos" (60,73%) y "Cargas Sociales" (15,00%). Estos dos rubros representan más del 75% del total de gastos fijos, evidenciando el peso de la estructura de personal en los costos operativos de la compañía.
+            </p>
+            <div class="flex flex-col md:flex-row items-center gap-6">
+                <div class="w-full md:w-1/2 h-80">
+                    <canvas id="gastosFijosChart"></canvas>
+                </div>
+                <div class="w-full md:w-1/2">
+                    <h3>Principales Gastos Fijos (Acumulado Ene-Ago)</h3>
+                    <ul class="space-y-2" id="lista-gastos-fijos">
+                        <!-- Generado por JS -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Conclusiones -->
+        <div class="card">
+             <div class="flex justify-between items-center">
+                <h2>Conclusiones y Recomendaciones</h2>
+            </div>
+            <div id="recommendations-content">
+                 <ol class="list-decimal list-inside space-y-3">
+                    <li>
+                        <strong>Alerta por Volatilidad y Pérdidas Recurrentes:</strong> Agosto confirma la tendencia de alta volatilidad con una nueva pérdida operativa. Tener 2 meses de 8 con resultados negativos es una señal de alerta importante.
+                        <br><strong>Recomendación:</strong> Es urgente revisar y ajustar la política de gestión de riesgos. Implementar límites de exposición más estrictos (VaR, stop-loss) para la cartera propia y analizar las estrategias que derivaron en las pérdidas de mayo y agosto.
+                    </li>
+                    <li>
+                        <strong>Fortaleza Patrimonial como Soporte:</strong> La sólida estructura de capital y solvencia sigue siendo el principal pilar de la compañía, permitiendo absorber estos shocks operativos sin comprometer la estabilidad.
+                        <br><strong>Recomendación:</strong> Aprovechar esta fortaleza para explorar líneas de negocio con ingresos más predecibles (ej. comisiones por administración de carteras, research) que puedan estabilizar el flujo de fondos mensual.
+                    </li>
+                    <li>
+                        <strong>Análisis de Estructura de Costos:</strong> La alta concentración de costos en "Productores" (57%) y en la estructura salarial (75% de los gastos fijos) debe ser monitoreada.
+                        <br><strong>Recomendación:</strong> Desglosar el costo de "Productores" para entender su componente fijo vs. variable. Evaluar la eficiencia de la estructura de costos fijos, buscando optimizaciones que no afecten la capacidad operativa.
+                    </li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // --- DATOS FINANCIEROS CORREGIDOS ---
+        const data = {
+            patrimonial: { 
+                activo: [21847131817.54, 30384964542.67, 32198301630.86, 35022693687.61, 35852101824.16, 41213345064.73, 37685145739.83, 35045464117.59],
+                pasivo: [12528054629.62, 20160512905.37, 21788969006.91, 22727426745.14, 25024084251.60, 29446132544.12, 25659988017.80, 23527091885.42],
+                pn: [9319077187.92, 10224451637.30, 10409332623.95, 12295266942.47, 10828017572.56, 11767212520.61, 12025157722.03, 11518372232.17]
+            },
+            resultados: { 
+                ingresos: [2207809808.39, 2043312687.52, 771018120.39, 3394175087.33, 1120744747.45, 2102395967.65, 2303321808.84, 3382927429.68],
+                egresos: [1243679462.88, 1137938238.14, 586137135.74, 1508240766.83, 1441816475.93, 1163201019.61, 2045376607.42, 3870085798.44],
+                resultado: [964130345.51, 905374449.38, 184880984.65, 1885934320.50, -321071728.48, 939194948.04, 257945201.42, -487158368.76]
+            },
+            cartera: { 
+                resultadoFinal: [1212077633.18, 1266007861.01, 426344318.41, 2576945857.01, 698171205.05, 1417192126.31, 992648917.59, 157267355.64]
+            },
+            gastos: { 
+                labels: ['Productores', 'Mesa', 'Neix (Corp.)', 'Back Office', 'Administración', 'IT', 'RRHH', 'Banca Comercial', 'MKTG', 'Mendoza', 'Banca Privada'],
+                acumulado: [1862712211.34, 525301030.73, 490260153.33, 86687198.26, 71189608.74, 68760544.96, 66173664.45, 25490478.31, 24599530.78, 21909680.35, 6843198.45]
+            },
+            gastosFijos: {
+                labels: ['Sueldos', 'Cargas Sociales', 'Serv. Contratados', 'Honorarios', 'Alquileres', 'Telefonía/Internet', 'Suscripciones', 'Obra Social', 'Autónomos'],
+                acumulado: [2347026086.42, 579412869.71, 499841318.51, 184680262.90, 178263312.42, 27207314.00, 25046520.40, 22276341.83, 2623287.37]
+            }
+        };
+        const meses = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago'];
+
+        // --- HELPERS ---
+        const formatCurrency = (value) => {
+            return new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' }).format(value);
+        };
+
+        // --- KPIs ---
+        const resultadoAcumuladoFinal = data.resultados.resultado.reduce((a, b) => a + b, 0);
+        document.getElementById('kpi-resultado-acumulado').innerText = formatCurrency(resultadoAcumuladoFinal);
+        document.getElementById('kpi-activo-total').innerText = formatCurrency(data.patrimonial.activo[data.patrimonial.activo.length - 1]);
+        const solvenciaPromedio = data.patrimonial.activo.reduce((sum, val, i) => sum + (val / data.patrimonial.pasivo[i]), 0) / meses.length;
+        document.getElementById('kpi-solvencia').innerText = solvenciaPromedio.toFixed(2);
+        
+        // --- TABLA RESULTADOS ---
+        const tablaResultados = document.getElementById('tabla-resultados');
+        let headerResultados = `<thead><tr><th>Mes</th><th class="number">Ingresos</th><th class="number">Egresos</th><th class="number">Resultado Mensual</th><th class="number">Margen Neto</th></tr></thead>`;
+        let bodyResultados = '<tbody>';
+        let totalIngresos = 0, totalEgresos = 0, totalResultado = 0;
+        meses.forEach((mes, i) => {
+            const ingreso = data.resultados.ingresos[i];
+            const egreso = data.resultados.egresos[i];
+            const resultado = data.resultados.resultado[i];
+            const margen = ingreso > 0 ? resultado / ingreso : 0;
+            totalIngresos += ingreso;
+            totalEgresos += egreso;
+            totalResultado += resultado;
+            bodyResultados += `
+                <tr>
+                    <td>${mes}</td>
+                    <td class="number">${formatCurrency(ingreso)}</td>
+                    <td class="number">${formatCurrency(egreso)}</td>
+                    <td class="number font-semibold ${resultado < 0 ? 'text-loss' : ''}">${formatCurrency(resultado)}</td>
+                    <td class="number ${margen < 0 ? 'text-loss' : ''}">${(margen * 100).toFixed(2)}%</td>
+                </tr>
+            `;
+        });
+        const margenTotal = totalIngresos !== 0 ? totalResultado / totalIngresos : 0;
+        bodyResultados += `
+            <tr class="font-bold bg-gray-200">
+                <td>Total Período</td>
+                <td class="number">${formatCurrency(totalIngresos)}</td>
+                <td class="number">${formatCurrency(totalEgresos)}</td>
+                <td class="number">${formatCurrency(totalResultado)}</td>
+                <td class="number">${(margenTotal * 100).toFixed(2)}%</td>
+            </tr>
+        `;
+        bodyResultados += '</tbody>';
+        tablaResultados.innerHTML = headerResultados + bodyResultados;
+
+        // --- TABLA PATRIMONIO ---
+        const tablaPatrimonio = document.getElementById('tabla-patrimonio');
+        let headerPatrimonio = `<thead><tr><th>Mes</th><th class="number">Activo</th><th class="number">Pasivo</th><th class="number">Pat. Neto</th><th class="number">Solvencia</th><th class="number">Apalancamiento</th></tr></thead>`;
+        let bodyPatrimonio = '<tbody>';
+        meses.forEach((mes, i) => {
+            const solvencia = data.patrimonial.activo[i] / data.patrimonial.pasivo[i];
+            const apalancamiento = data.patrimonial.pasivo[i] / data.patrimonial.pn[i];
+            bodyPatrimonio += `
+                <tr>
+                    <td>${mes}</td>
+                    <td class="number">${formatCurrency(data.patrimonial.activo[i])}</td>
+                    <td class="number">${formatCurrency(data.patrimonial.pasivo[i])}</td>
+                    <td class="number">${formatCurrency(data.patrimonial.pn[i])}</td>
+                    <td class="number">${solvencia.toFixed(2)}</td>
+                    <td class="number">${apalancamiento.toFixed(2)}</td>
+                </tr>
+            `;
+        });
+        bodyPatrimonio += '</tbody>';
+        tablaPatrimonio.innerHTML = headerPatrimonio + bodyPatrimonio;
+
+        // --- GRÁFICOS ---
+        const chartOptions = (hasNegativeValues = false) => ({
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    ticks: {
+                        callback: function(value) {
+                            return (value / 1e9).toFixed(1) + 'B';
+                        }
+                    }
+                }
+            },
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return `${context.dataset.label}: ${formatCurrency(context.raw)}`;
+                        }
+                    }
+                }
+            }
+        });
+        
+        const pieChartOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                     callbacks: {
+                        label: function(context) {
+                            return ` ${context.label}: ${context.raw.toFixed(2)}%`;
+                        }
+                    }
+                }
+            }
+        };
+
+        // Gráfico 1: Resultados
+        new Chart(document.getElementById('resultadosChart'), {
+            type: 'bar',
+            data: {
+                labels: meses,
+                datasets: [
+                    {
+                        label: 'Ingresos',
+                        data: data.resultados.ingresos,
+                        backgroundColor: 'rgba(59, 130, 246, 0.7)',
+                        order: 2
+                    },
+                    {
+                        label: 'Egresos',
+                        data: data.resultados.egresos,
+                        backgroundColor: 'rgba(239, 68, 68, 0.7)',
+                        order: 2
+                    },
+                    {
+                        label: 'Resultado Mensual',
+                        data: data.resultados.resultado,
+                        borderColor: 'rgb(22, 163, 74)',
+                        backgroundColor: 'rgba(22, 163, 74, 0.1)',
+                        borderWidth: 2,
+                        type: 'line',
+                        tension: 0.2,
+                        fill: false,
+                        order: 1
+                    }
+                ]
+            },
+            options: chartOptions(true)
+        });
+
+        // Gráfico 2: Cartera Propia
+        new Chart(document.getElementById('carteraChart'), {
+            type: 'bar',
+            data: {
+                labels: meses,
+                datasets: [
+                    {
+                        label: 'Resultado Final Cartera (Mensual)',
+                        data: data.cartera.resultadoFinal,
+                         backgroundColor: data.cartera.resultadoFinal.map(v => v < 0 ? 'rgba(220, 38, 38, 0.7)' : 'rgba(79, 70, 229, 0.7)'),
+                    }
+                ]
+            },
+            options: chartOptions(true)
+        });
+
+        // Gráfico 3: Patrimonio
+        new Chart(document.getElementById('patrimonioChart'), {
+            type: 'line',
+            data: {
+                labels: meses,
+                datasets: [
+                    {
+                        label: 'Activo',
+                        data: data.patrimonial.activo,
+                        borderColor: 'rgb(37, 99, 235)',
+                        backgroundColor: 'rgba(37, 99, 235, 0.2)',
+                        fill: true,
+                        tension: 0.3
+                    },
+                    {
+                        label: 'Pasivo',
+                        data: data.patrimonial.pasivo,
+                        borderColor: 'rgb(217, 70, 239)',
+                        backgroundColor: 'rgba(217, 70, 239, 0.2)',
+                        fill: true,
+                        tension: 0.3
+                    },
+                    {
+                        label: 'Patrimonio Neto',
+                        data: data.patrimonial.pn,
+                        borderColor: 'rgb(14, 165, 233)',
+                        backgroundColor: 'rgba(14, 165, 233, 0.2)',
+                        fill: true,
+                        tension: 0.3
+                    }
+                ]
+            },
+            options: chartOptions()
+        });
+        
+        // --- Procesamiento y Gráfico 4: GASTOS POR CENTRO DE COSTO ---
+        const totalGastosCC = data.gastos.acumulado.reduce((a, b) => a + b, 0);
+        const porcentajesGastosCC = data.gastos.acumulado.map(g => (g / totalGastosCC) * 100);
+        const listaGastosCC = document.getElementById('lista-gastos-cc');
+        data.gastos.labels.forEach((label, i) => {
+            const li = document.createElement('li');
+            li.className = 'flex justify-between';
+            li.innerHTML = `<span>${i+1}. ${label}:</span> <span class="font-semibold">${formatCurrency(data.gastos.acumulado[i])} (${porcentajesGastosCC[i].toFixed(2)}%)</span>`;
+            listaGastosCC.appendChild(li);
+        });
+
+        new Chart(document.getElementById('gastosChart'), {
+            type: 'pie',
+            data: {
+                labels: data.gastos.labels,
+                datasets: [{
+                    label: '% de Gastos Acumulados',
+                    data: porcentajesGastosCC,
+                    backgroundColor: ['#4f46e5', '#7c3aed', '#db2777', '#f97316', '#eab308', '#22c55e', '#06b6d4', '#3b82f6', '#8b5cf6', '#d946ef', '#f43f5e'],
+                    hoverOffset: 4
+                }]
+            },
+            options: pieChartOptions
+        });
+
+        // --- Procesamiento y Gráfico 5: GASTOS FIJOS ---
+        const totalGastosFijos = data.gastosFijos.acumulado.reduce((a, b) => a + b, 0);
+        const porcentajesGastosFijos = data.gastosFijos.acumulado.map(g => (g / totalGastosFijos) * 100);
+        const listaGastosFijos = document.getElementById('lista-gastos-fijos');
+        data.gastosFijos.labels.forEach((label, i) => {
+            const li = document.createElement('li');
+            li.className = 'flex justify-between';
+            li.innerHTML = `<span>${i+1}. ${label}:</span> <span class="font-semibold">${formatCurrency(data.gastosFijos.acumulado[i])} (${porcentajesGastosFijos[i].toFixed(2)}%)</span>`;
+            listaGastosFijos.appendChild(li);
+        });
+
+        new Chart(document.getElementById('gastosFijosChart'), {
+            type: 'pie',
+            data: {
+                labels: data.gastosFijos.labels,
+                datasets: [{
+                    label: '% de Gastos Fijos Acumulados',
+                    data: porcentajesGastosFijos,
+                    backgroundColor: ['#1d4ed8', '#0e7490', '#c2410c', '#b45309', '#a16207', '#4d7c0f', '#15803d', '#0f766e', '#be185d'],
+                    hoverOffset: 4
+                }]
+            },
+            options: pieChartOptions
+        });
+
+    });
+</script>
+</body>
+</html>
+
